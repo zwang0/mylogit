@@ -18,7 +18,7 @@ a list containing the following components:
 
 \item{coefficients}{coefficients of logistic regression model}
 
-\item{fitted.values}{fitted values for origin dataset}
+\item{fitted.values}{fitted values for input dataset}
 
 \item{cov}{covariance matrix}
 
@@ -29,6 +29,22 @@ a list containing the following components:
 \item{null.deviance}{null deviance}
 
 \item{r2}{r-square, 1 - (deviance/null.deviance)}
+
+\item{AIC}{AIC score}
+
+\item{null.df}{degrees of freedom of null model}
+
+\item{df}{degrees of freedom of logistic model}
+
+\item{level}{the levels of response variable}
+
+\item{predict.class}{class prediction for input dataset}
+
+\item{predict.accuracy}{accuracy of class prediction}
+
+\item{formula}{formula of logistic model}
+
+\item{data}{input dataset}
 }
 \description{
 mylogit is used to fit a logistic regression model.

@@ -16,7 +16,7 @@ mylogit.predict(model, data = NULL, print = FALSE)
 \value{
 a list containing the following components:
 
-\item{yhat} {fitted values}
+\item{yhat}{fitted values}
 }
 \description{
 mylogit.predict is used to make a class prediction of logistic model.

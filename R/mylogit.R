@@ -41,7 +41,7 @@ mylogit = function(formula, data, format="brief") {
 
   # control criteria
   criteria = 1e-05
-  max.iter = 1e05
+  max.iter = 1e04
 
   # compute estimate
   beta = matrix(0, p+1, 1) # initialize beta
