@@ -2,11 +2,9 @@
 #'
 #'mylogit is used to fit a logistic regression model.
 #'
-#'@import stats, datasets
-#'
 #'@param formula a symbolic description of the model to be fitted.
 #'@param data a data frame containing the variables in the model.
-#'@param format output format. `brief` for brief output, `detailed` for detailed output.
+#'@param format output format. "brief" for brief output, "detailed" for detailed output.
 #'
 #'@return a list containing the following components:
 #'
@@ -15,22 +13,6 @@
 #'
 #'@export
 #'
-mylogitEst = function(X, y_mat, p, criteria, max.iter) {
-  beta = matrix(0, p+1, 1) # initialize beta
-  eps = 1 # initial criteria
-  iter = 0 # initial iteration
-  # loop to converge beta
-  while (eps >= criteria || iter < max.iter) {
-    prob = 1/(1+exp(-X %*% beta)) # X is n by p+1, beta is p+1 by 1
-    X_tilde = as.numeric(prob*(1-prob))*X
-    beta_new = beta + solve(t(X) %*% X_tilde) %*% (t(X) %*% (y_mat - prob))
-    eps = max(abs(beta_new - beta)) # compute criteria
-    beta = beta_new # update beta
-    iter =  iter + 1 # update run_loop
-  }
-  return(beta)
-}
-
 mylogit = function(formula, data, format="brief") {
   # extra x and y
   mf = model.frame(formula=formula, data=data)
@@ -97,4 +79,5 @@ mylogit = function(formula, data, format="brief") {
   }
   invisible(output)
 }
+
 
