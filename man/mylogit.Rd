@@ -11,15 +11,29 @@ mylogit(formula, data, format = "brief")
 
 \item{data}{a data frame containing the variables in the model.}
 
-\item{format}{output format. "brief" for brief output, "detailed" for detailed output.}
+\item{format}{output format. \emph{brief} for brief output, \emph{detailed} for detailed output.}
 }
 \value{
 a list containing the following components:
+
+\item{coefficients}{coefficients of logistic regression model}
+
+\item{fitted.values}{fitted values for origin dataset}
+
+\item{cov}{covariance matrix}
+
+\item{std.err}{standard error}
+
+\item{deviance}{deviance}
+
+\item{null.deviance}{null deviance}
+
+\item{r2}{r-square, 1 - (deviance/null.deviance)}
 }
 \description{
 mylogit is used to fit a logistic regression model.
 }
 \examples{
-mylogit(formula = supp ~ len + dose, data = ToothGrowth)
+logit = mylogit(formula = supp ~ len + dose, data = ToothGrowth)
 
 }

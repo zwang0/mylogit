@@ -4,13 +4,27 @@
 #'
 #'@param formula a symbolic description of the model to be fitted.
 #'@param data a data frame containing the variables in the model.
-#'@param format output format. "brief" for brief output, "detailed" for detailed output.
+#'@param format output format. \emph{brief} for brief output, \emph{detailed} for detailed output.
 #'
 #'@return a list containing the following components:
+#'@return \item{coefficients}{coefficients of logistic regression model}
+#'@return \item{fitted.values}{fitted values for input dataset}
+#'@return \item{cov}{covariance matrix}
+#'@return \item{std.err}{standard error}
+#'@return \item{deviance}{deviance}
+#'@return \item{null.deviance}{null deviance}
+#'@return \item{r2}{r-square, 1 - (deviance/null.deviance)}
+#'@return \item{AIC}{AIC score}
+#'@return \item{null.df}{degrees of freedom of null model}
+#'@return \item{df}{degrees of freedom of logistic model}
+#'@return \item{level}{the levels of response variable}
+#'@return \item{predict.class}{class prediction for input dataset}
+#'@return \item{predict.accuracy}{accuracy of class prediction}
+#'@return \item{formula}{formula of logistic model}
+#'@return \item{data}{input dataset}
 #'
 #'@examples
 #'logit = mylogit(formula = supp ~ len + dose, data = ToothGrowth)
-#'logit.pred = mylogit.predict(logit)
 #'
 #'@import stats datasets
 #'
@@ -103,26 +117,6 @@ mylogit = function(formula, data, format="brief") {
     cat("\nR-squared: ", round(r2, 4))
     cat("\nAIC: ", round(AIC, 4))
     cat("\nPrediction Class accuracy: ", round(predict.acc, 4))
-  }
-  invisible(output)
-}
-
-#'@export
-mylogit.predict = function(model, data=NULL, print=FALSE) {
-  # make the prediction of class
-  if(is.null(data)) {
-    data = model$data
-  }
-  mf = model.frame(formula=model$formula, data=data)
-  X = model.matrix(attr(mf, "terms"), data=mf)
-  coef = as.matrix(t(model$coefficients))
-  level = model$level
-  yhat = 1/(1+exp(-X %*% coef))
-  predict.class = ifelse(yhat < 0.5, level[1], level[2])
-  output = list(yhat = as.vector(yhat),
-                predict.class = as.vector(predict.class))
-  if(print) {
-    print(output$predict.class)
   }
   invisible(output)
 }
