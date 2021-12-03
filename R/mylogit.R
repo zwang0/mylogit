@@ -9,7 +9,8 @@
 #'@return a list containing the following components:
 #'
 #'@examples
-#'mylogit(formula = supp ~ len + dose, data = ToothGrowth)
+#'logit = mylogit(formula = supp ~ len + dose, data = ToothGrowth)
+#'logit.pred = mylogit.predict(logit)
 #'
 #'@import stats datasets
 #'
@@ -53,7 +54,7 @@ mylogit = function(formula, data, format="brief") {
   std.err = sqrt(diag(cov.mat))
   deviance = -2*loglik
   null.deviance = -2*loglik_null
-  # AIC =
+  AIC = -2*loglik + 2*(p+1)
   r2 = 1 - deviance / null.deviance
   call = match.call()
   null.df = n-1
@@ -68,31 +69,60 @@ mylogit = function(formula, data, format="brief") {
                 deviance = deviance,
                 null.deviance = null.deviance,
                 r2 = r2,
+                AIC = AIC,
                 null.df = null.df,
                 df = df,
                 level = level,
                 predict.class = predict.class,
-                predict.accuracy = predict.acc)
+                predict.accuracy = predict.acc,
+                formula = formula,
+                data = data)
   if(format == "brief") {
     cat("Call:\n")
-    print(output$call, digits=4)
+    print(output$call)
     cat("\nCoefficients:\n")
-    print(output$coefficients, row.names=FALSE, digits=4)
+    print(round(output$coefficients, 4), row.names=FALSE)
     cat("\nDegrees of Freedom:\n")
     cat(output$null.df, " Total (i.e. Null); ", output$df, " Residual")
+    cat("\n    Null deviance: ", round(null.deviance, 4), " on ", null.df, " degrees of freedom" )
+    cat("\nResidual deviance: ", round(deviance, 4), " on ", df, " degrees of freedom")
+    cat("\nR-squared: ", round(r2, 4))
+    cat("\nAIC: ", round(AIC, 4))
   } else if (format == "detailed") {
     z_val = unlist(output$coefficients / output$std.err)
     p_val = (1 - pnorm(abs(z_val))) * 2
-    df = data.frame(coef, output$std.err, z_val, p_val)
-    colnames(df) = c("Estimate", "Std. Error", "z value", "Pr(>|z|)")
+    coef.df = data.frame(coef, output$std.err, z_val, p_val)
+    colnames(coef.df) = c("Estimate", "Std. Error", "z value", "Pr(>|z|)")
     # print
     cat("Call:\n")
-    print(output$call, digits=4)
+    print(output$call)
     cat("\nCoefficients:\n")
-    print(df, digits=4)
-    cat("\n    Null deviance: ", null.deviance, " on ", null.df, " degrees of freedom" )
-    cat("\nResidual deviance: ", deviance, " on ", df, " degrees of freedom")
+    print(round(coef.df, 4))
+    cat("\n    Null deviance: ", round(null.deviance, 4), " on ", null.df, " degrees of freedom" )
+    cat("\nResidual deviance: ", round(deviance, 4), " on ", df, " degrees of freedom")
+    cat("\nR-squared: ", round(r2, 4))
+    cat("\nAIC: ", round(AIC, 4))
+    cat("\nPrediction Class accuracy: ", round(predict.acc, 4))
   }
   invisible(output)
 }
 
+#'@export
+mylogit.predict = function(model, data=NULL, print=FALSE) {
+  # make the prediction of class
+  if(is.null(data)) {
+    data = model$data
+  }
+  mf = model.frame(formula=model$formula, data=data)
+  X = model.matrix(attr(mf, "terms"), data=mf)
+  coef = as.matrix(t(model$coefficients))
+  level = model$level
+  yhat = 1/(1+exp(-X %*% coef))
+  predict.class = ifelse(yhat < 0.5, level[1], level[2])
+  output = list(yhat = as.vector(yhat),
+                predict.class = as.vector(predict.class))
+  if(print) {
+    print(output$predict.class)
+  }
+  invisible(output)
+}
