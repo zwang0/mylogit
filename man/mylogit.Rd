@@ -11,7 +11,7 @@ mylogit(formula, data, format = "brief")
 
 \item{data}{a data frame containing the variables in the model.}
 
-\item{format}{output format. `brief` for brief output, `detailed` for detailed output.}
+\item{format}{output format. "brief" for brief output, "detailed" for detailed output.}
 }
 \value{
 a list containing the following components:

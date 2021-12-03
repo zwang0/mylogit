@@ -11,8 +11,9 @@
 #'@examples
 #'mylogit(formula = supp ~ len + dose, data = ToothGrowth)
 #'
-#'@export
+#'@import stats datasets
 #'
+#'@export
 mylogit = function(formula, data, format="brief") {
   # extra x and y
   mf = model.frame(formula=formula, data=data)
@@ -22,11 +23,26 @@ mylogit = function(formula, data, format="brief") {
   n = dim(X)[1]
   p = dim(X)[2] - 1
   level = levels(y)
+
   # control criteria
   criteria = 1e-05
   max.iter = 1e05
+
   # compute estimate
-  coef = mylogitEst(X, y_mat, p, criteria, max.iter)
+  beta = matrix(0, p+1, 1) # initialize beta
+  eps = 1 # initial criteria
+  iter = 0 # initial iteration
+  # loop to converge beta
+  while (eps >= criteria || iter < max.iter) {
+    prob = 1/(1+exp(-X %*% beta)) # X is n by p+1, beta is p+1 by 1
+    X_tilde = as.numeric(prob*(1-prob))*X
+    beta_new = beta + solve(t(X) %*% X_tilde) %*% (t(X) %*% (y_mat - prob))
+    eps = max(abs(beta_new - beta)) # compute criteria
+    beta = beta_new # update beta
+    iter =  iter + 1 # update run_loop
+  }
+  coef = beta
+
   # compute stats indicators
   yhat = 1/(1+exp(-X %*% coef))
   loglik = sum(log(yhat)*as.numeric(y_mat) + log(1-yhat)*(1- as.numeric(y_mat)))
@@ -79,5 +95,4 @@ mylogit = function(formula, data, format="brief") {
   }
   invisible(output)
 }
-
 
