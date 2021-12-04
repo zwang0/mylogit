@@ -39,4 +39,9 @@ test_that("mylogit works", {
     expect_equal(myfit.pred$predict.value, myfit$fitted.values, tolerance=tol)
     expect_equal(myfit.pred$predict.value, rfit.pred, tolerance=tol)
   }
+
+  # other tests
+  mylogit(supp~., ToothGrowth, "detailed")
+  myfit4 = mylogit(supp~., ToothGrowth)
+  mylogit.predict(myfit1, print=TRUE)
 })
