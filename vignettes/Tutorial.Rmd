@@ -20,17 +20,31 @@ library(mylogit)
 
 To use function `mylogit`:
 ```{r}
-# fit a logistic regerssion
-logit = mylogit(supp ~ len + dose,  data = ToothGrowth)
+# fit a logistic regression model where the response variable has 2 classes
+# With format = "detailed", more details will be printed
+logit = mylogit(supp ~ len + dose,  data = ToothGrowth, format = "detailed")
 logit
 ```
 
 To make a class prediction:
 ```{r}
-
+# predict the class for given test data 
+logit.pred = mylogit.predict(logit, ToothGrowth[1:30,])
+logit.pred
+# if no test data is provided, it will return the fitted value and corresponding class
+logit.pred.2 = mylogit.predict(logit)
+logit.pred.2
+# you may choose to print prediction class when calling the function
+mylogit.predict(logit, print=TRUE)
 ```
 
 Compare with `glm` logistic regression model in `stats` R package:
 ```{r}
-
+# we mainly compare the efficiency between two functions
+myfit.time = system.time(for(i in 1:10) mylogit(supp~len+dose, data=ToothGrowth, format="nothing"))
+rfit.time = system.time(for(i in 1:10) glm(supp~len+dose, data=ToothGrowth, family="binomial"))
+print(myfit.time)
+print(rfit.time)
 ```
+Well, apparently, `mylogit` function is less efficient than the `glm` logistic
+regression model in `family = "binomial"`.

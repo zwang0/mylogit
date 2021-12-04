@@ -1,11 +1,11 @@
 test_that("mylogit works", {
   # run mylogit
-  myfit1 = mylogit(supp~len+dose, ToothGrowth, format="Nothing")
+  myfit1 = mylogit(supp~len+dose, ToothGrowth, format="nothing")
   # run glm logit fit
   rfit1 = glm(supp~len+dose, ToothGrowth, family=binomial)
   # test models with different input format
-  myfit2 = mylogit(supp~len, ToothGrowth, format="Nothing")
-  myfit3 = mylogit(supp~len*dose, ToothGrowth, format="Nothing")
+  myfit2 = mylogit(supp~len, ToothGrowth, format="nothing")
+  myfit3 = mylogit(supp~len*dose, ToothGrowth, format="nothing")
   rfit2 = glm(supp~len, ToothGrowth, family=binomial)
   rfit3 = glm(supp~len*dose, ToothGrowth, family=binomial)
   # fits
@@ -36,8 +36,7 @@ test_that("mylogit works", {
 
     expect_equal(myfit.pred$predict.class, rfit.class.pred)
     expect_equal(myfit.pred$predict.class, myfit$predict.class)
-    expect_equal(myfit.pred$yhat, myfit$fitted.values, tolerance=tol)
-    expect_equal(myfit.pred$yhat, rfit.pred, tolerance=tol)
-
+    expect_equal(myfit.pred$predict.value, myfit$fitted.values, tolerance=tol)
+    expect_equal(myfit.pred$predict.value, rfit.pred, tolerance=tol)
   }
 })

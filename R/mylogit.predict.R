@@ -31,7 +31,7 @@ mylogit.predict = function(model, data=NULL, print=FALSE) {
   yhat = as.vector(yhat)
   names(yhat) = 1:length(yhat)
   predict.class = as.vector(predict.class)
-  output = list(yhat = yhat,
+  output = list(predict.value = yhat,
                 predict.class = predict.class)
   if(print) {
     print(output$predict.class)
