@@ -4,7 +4,9 @@
 #'
 #'@param formula a symbolic description of the model to be fitted.
 #'@param data a data frame containing the variables in the model.
-#'@param format output format. \emph{brief} for brief output, \emph{detailed} for detailed output.
+#'@param format output format. \emph{brief}, as default for brief output,
+#'                             \emph{detailed} for detailed output,
+#'                             \emph{nothing} for no printing output.
 #'
 #'@return a list containing the following components:
 #'@return \item{coefficients}{coefficients of logistic regression model}
@@ -24,7 +26,7 @@
 #'@return \item{data}{input dataset}
 #'
 #'@examples
-#'logit = mylogit(formula = supp ~ len + dose, data = ToothGrowth)
+#'mylogit(formula = supp ~ len + dose, data = ToothGrowth, format="brief")
 #'
 #'@import stats datasets
 #'
@@ -73,11 +75,10 @@ mylogit = function(formula, data, format="brief") {
   call = match.call()
   null.df = n-1
   df = n-p-1
-  predict.class = ifelse(yhat < 0.5, level[1], level[2])
+  predict.class = as.vector(ifelse(yhat < 0.5, level[1], level[2]))
   predict.acc = sum(y == predict.class)/n
   output = list(call = call,
-                coefficients = as.data.frame(t(coef)),
-                fitted.values = yhat,
+                coefficients = unlist(as.data.frame(t(coef))),
                 cov = cov.mat,
                 std.err = std.err,
                 deviance = deviance,
@@ -87,6 +88,7 @@ mylogit = function(formula, data, format="brief") {
                 null.df = null.df,
                 df = df,
                 level = level,
+                fitted.values = unlist(as.data.frame(t(yhat))),
                 predict.class = predict.class,
                 predict.accuracy = predict.acc,
                 formula = formula,
@@ -95,7 +97,7 @@ mylogit = function(formula, data, format="brief") {
     cat("Call:\n")
     print(output$call)
     cat("\nCoefficients:\n")
-    print(round(output$coefficients, 4), row.names=FALSE)
+    print(round(output$coefficients, 4))
     cat("\nDegrees of Freedom:\n")
     cat(output$null.df, " Total (i.e. Null); ", output$df, " Residual")
     cat("\n    Null deviance: ", round(null.deviance, 4), " on ", null.df, " degrees of freedom" )

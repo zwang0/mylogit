@@ -17,12 +17,14 @@ mylogit.predict(model, data = NULL, print = FALSE)
 a list containing the following components:
 
 \item{yhat}{fitted values}
+
+\item{predict.class}{predicted class}
 }
 \description{
 mylogit.predict is used to make a class prediction of logistic model.
 }
 \examples{
 logit = mylogit(formula = supp ~ len + dose, data = ToothGrowth)
-logit.pred = mylogit.predict(logit)
+mylogit.predict(logit, print=TRUE)
 
 }

@@ -8,11 +8,11 @@
 #'
 #'@return a list containing the following components:
 #'@return \item{yhat}{fitted values}
-#'@returm \item{predict.class}{predicted class}
+#'@return \item{predict.class}{predicted class}
 #'
 #'@examples
 #'logit = mylogit(formula = supp ~ len + dose, data = ToothGrowth)
-#'logit.pred = mylogit.predict(logit)
+#'mylogit.predict(logit, print=TRUE)
 #'
 #'@import stats
 #'
@@ -24,12 +24,15 @@ mylogit.predict = function(model, data=NULL, print=FALSE) {
   }
   mf = model.frame(formula=model$formula, data=data)
   X = model.matrix(attr(mf, "terms"), data=mf)
-  coef = as.matrix(t(model$coefficients))
+  coef = as.matrix(model$coefficients)
   level = model$level
   yhat = 1/(1+exp(-X %*% coef))
   predict.class = ifelse(yhat < 0.5, level[1], level[2])
-  output = list(yhat = as.vector(yhat),
-                predict.class = as.vector(predict.class))
+  yhat = as.vector(yhat)
+  names(yhat) = 1:length(yhat)
+  predict.class = as.vector(predict.class)
+  output = list(yhat = yhat,
+                predict.class = predict.class)
   if(print) {
     print(output$predict.class)
   }

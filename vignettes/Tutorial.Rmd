@@ -1,0 +1,36 @@
+---
+title: "Tutorial"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Tutorial}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(mylogit)
+```
+
+To use function `mylogit`:
+```{r}
+# fit a logistic regerssion
+logit = mylogit(supp ~ len + dose,  data = ToothGrowth)
+logit
+```
+
+To make a class prediction:
+```{r}
+
+```
+
+Compare with `glm` logistic regression model in `stats` R package:
+```{r}
+
+```

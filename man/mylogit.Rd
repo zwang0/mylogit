@@ -11,7 +11,9 @@ mylogit(formula, data, format = "brief")
 
 \item{data}{a data frame containing the variables in the model.}
 
-\item{format}{output format. \emph{brief} for brief output, \emph{detailed} for detailed output.}
+\item{format}{output format. \emph{brief}, as default for brief output,
+\emph{detailed} for detailed output,
+\emph{nothing} for no printing output.}
 }
 \value{
 a list containing the following components:
@@ -50,6 +52,6 @@ a list containing the following components:
 mylogit is used to fit a logistic regression model.
 }
 \examples{
-logit = mylogit(formula = supp ~ len + dose, data = ToothGrowth)
+mylogit(formula = supp ~ len + dose, data = ToothGrowth, format="brief")
 
 }
