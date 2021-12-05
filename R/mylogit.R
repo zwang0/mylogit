@@ -10,7 +10,8 @@
 #'
 #'@return a list containing the following components:
 #'@return \item{coefficients}{coefficients of logistic regression model}
-#'@return \item{fitted.values}{fitted values for input dataset}
+#'@return \item{z.value}{the z score of coefficients}
+#'@return \item{p.value}{the p value of coefficients}
 #'@return \item{cov}{covariance matrix}
 #'@return \item{std.err}{standard error}
 #'@return \item{deviance}{deviance}
@@ -20,6 +21,7 @@
 #'@return \item{null.df}{degrees of freedom of null model}
 #'@return \item{df}{degrees of freedom of logistic model}
 #'@return \item{level}{the levels of response variable}
+#'@return \item{fitted.values}{fitted values for input dataset}
 #'@return \item{predict.class}{class prediction for input dataset}
 #'@return \item{predict.accuracy}{accuracy of class prediction}
 #'@return \item{formula}{formula of logistic model}
@@ -65,9 +67,10 @@ mylogit = function(formula, data, format="brief") {
   loglik = sum(log(yhat)*as.numeric(y_mat) + log(1-yhat)*(1- as.numeric(y_mat)))
   loglik_null = sum(log(mean(y_mat))*as.numeric(y_mat) +
                       log(1-mean(y_mat))*(1- as.numeric(y_mat)))
-  residuals = (y_mat - yhat) / sqrt(yhat*(1-yhat))
   cov.mat = solve(t(X) %*% (as.numeric(yhat*(1-yhat))*X))
   std.err = sqrt(diag(cov.mat))
+  z_val = unlist(coef / std.err)
+  p_val = (1 - pnorm(abs(z_val))) * 2
   deviance = -2*loglik
   null.deviance = -2*loglik_null
   AIC = -2*loglik + 2*(p+1)
@@ -79,6 +82,8 @@ mylogit = function(formula, data, format="brief") {
   predict.acc = sum(y == predict.class)/n
   output = list(call = call,
                 coefficients = unlist(as.data.frame(t(coef))),
+                z.value = unlist(as.data.frame(t(z_val))),
+                p.value = unlist(as.data.frame(t(p_val))),
                 cov = cov.mat,
                 std.err = std.err,
                 deviance = deviance,
@@ -100,13 +105,11 @@ mylogit = function(formula, data, format="brief") {
     print(round(output$coefficients, 4))
     cat("\nDegrees of Freedom:\n")
     cat(output$null.df, " Total (i.e. Null); ", output$df, " Residual")
-    cat("\n    Null deviance: ", round(null.deviance, 4), " on ", null.df, " degrees of freedom" )
+    cat("\n\n    Null deviance: ", round(null.deviance, 4), " on ", null.df, " degrees of freedom" )
     cat("\nResidual deviance: ", round(deviance, 4), " on ", df, " degrees of freedom")
     cat("\nR-squared: ", round(r2, 4))
     cat("\nAIC: ", round(AIC, 4))
   } else if (format == "detailed") {
-    z_val = unlist(output$coefficients / output$std.err)
-    p_val = (1 - pnorm(abs(z_val))) * 2
     coef.df = data.frame(coef, output$std.err, z_val, p_val)
     colnames(coef.df) = c("Estimate", "Std. Error", "z value", "Pr(>|z|)")
     # print
