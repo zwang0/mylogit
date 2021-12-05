@@ -20,7 +20,9 @@ a list containing the following components:
 
 \item{coefficients}{coefficients of logistic regression model}
 
-\item{fitted.values}{fitted values for input dataset}
+\item{z.value}{the z score of coefficients}
+
+\item{p.value}{the p value of coefficients}
 
 \item{cov}{covariance matrix}
 
@@ -39,6 +41,8 @@ a list containing the following components:
 \item{df}{degrees of freedom of logistic model}
 
 \item{level}{the levels of response variable}
+
+\item{fitted.values}{fitted values for input dataset}
 
 \item{predict.class}{class prediction for input dataset}
 

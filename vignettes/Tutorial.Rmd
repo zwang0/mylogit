@@ -16,31 +16,109 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(mylogit)
+library(stats)
+library(datasets)
 ```
 
+
+## Intro
+
+This is a tutorial for R package `mylogit`. The main function `mylogit` is used
+to fit a binary logistic regression model , along with `mylogit.predict` to get
+the prediction value and class in a data set with fitted logistic model.
+The example data set is `ToothGrowth` in package `datasets`. You may look up the 
+help page for more information.
+
+A comparison on both correctness and efficiency with the model fitted by `glm` 
+will also be included.
+
+## Usage
 To use function `mylogit`:
+
+Fit a logistic regression model where the response variable has 2 classes.
+Default print out format is "brief", which provides basic statistics values
+for logistic model, such as coefficient, deviance, AIC score.
 ```{r}
-# fit a logistic regression model where the response variable has 2 classes
-# With format = "detailed", more details will be printed
-logit = mylogit(supp ~ len + dose,  data = ToothGrowth, format = "detailed")
-logit
+mylogit(supp ~ len,  data = ToothGrowth)
 ```
 
-To make a class prediction:
+With format = "detailed", more details will be printed, including a table of
+coefficients which contains estimate, standard error, z value, and p value.
 ```{r}
-# predict the class for given test data 
+mylogit(supp ~ len,  data = ToothGrowth, format = "detailed")
+```
+
+With format = "nothing", there is no printing. You may need to declare a name
+to store the model.
+```{r}
+logit = mylogit(supp ~ len,  data = ToothGrowth, format = "nothing")
+```
+
+Add another predictor variable.
+```{r}
+mylogit(supp ~ len + dose, data = ToothGrowth)
+```
+
+Add categorical predictor.
+```{r}
+mylogit(supp ~ len + as.factor(dose), data = ToothGrowth)
+```
+
+Add intersetion term.
+```{r}
+mylogit(supp ~ len + len*dose, data = ToothGrowth)
+```
+
+To make a class or value prediction, using `mylogit.predict`:
+
+Predict the class for given test data 
+```{r}
 logit.pred = mylogit.predict(logit, ToothGrowth[1:30,])
-logit.pred
-# if no test data is provided, it will return the fitted value and corresponding class
+logit.pred$predict.class
+logit.pred$predict.value
+```
+
+If no new data set provided, it will return the fitted value and corresponding class
+```{r}
 logit.pred.2 = mylogit.predict(logit)
 logit.pred.2
-# you may choose to print prediction class when calling the function
+```
+
+Actually, you will get the fitted value and predicted class in `mylogit`
+```{r}
+logit$fitted.values
+logit$predict.class
+```
+
+You may choose to print prediction class when calling the function
+```{R}
 mylogit.predict(logit, print=TRUE)
 ```
 
-Compare with `glm` logistic regression model in `stats` R package:
+
+## Comparsion
+Compare with the logistic regression model fitted by `glm` function in `stats` R package:
+Correctness Comparison
 ```{r}
-# we mainly compare the efficiency between two functions
+myfit  = mylogit(supp~., ToothGrowth, "nothing")
+rfit = glm(supp~., ToothGrowth, family="binomial")
+```
+
+```{r}
+all.equal(myfit$coefficients, rfit$coefficients) # coefficient check
+all.equal(myfit$fitted.values, rfit$fitted.values) # fitted value check
+all.equal(myfit$deviance, rfit$deviance) # deviance check
+all.equal(myfit$null.deviance, rfit$null.deviance) # null deviance check
+all.equal(myfit$std.err, summary(rfit)$coef[,2], tolerance = 1e-5) # coefficient standard error check
+all.equal(myfit$z.value, summary(rfit)$coef[,3], tolerance = 1e-5) # coefficient z value check
+all.equal(myfit$p.value, summary(rfit)$coef[,4], tolerance = 1e-5) # coefficient p value check
+all.equal(myfit$AIC, rfit$aic) # AIC check
+all.equal(myfit$df, rfit$df.residual) # degrees of freedom check
+all.equal(myfit$null.df, rfit$df.null) # null model degrees of freedom check
+``` 
+
+Efficiency Comparison
+```{r}
 myfit.time = system.time(for(i in 1:10) mylogit(supp~len+dose, data=ToothGrowth, format="nothing"))
 rfit.time = system.time(for(i in 1:10) glm(supp~len+dose, data=ToothGrowth, family="binomial"))
 print(myfit.time)
